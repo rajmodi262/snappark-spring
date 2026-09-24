@@ -1,0 +1,18 @@
+# Local CI server:  JENKINS_ADMIN_PASSWORD=<choose one> docker compose -f ci/jenkins/docker-compose.yml up -d --build
+# then open http://localhost:8090 and run the "snappark" job.
+# Runs as root only so the containerised controller can use the host Docker socket; local use only.
+services:
+  jenkins:
+    build: .
+    user: root
+    environment:
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?set JENKINS_ADMIN_PASSWORD}
+    ports:
+      - "8090:8080"
+    volumes:
+      - ../..:/repo:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - jenkins_home:/var/jenkins_home
+
+volumes:
+  jenkins_home:
