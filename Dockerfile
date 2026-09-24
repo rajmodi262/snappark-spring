@@ -5,9 +5,9 @@ FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /src
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw -B -q dependency:go-offline
-COPY src/ src/
-RUN ./mvnw -B -q package -DskipTests -Djacoco.skip=true \
+COPY src/main/ src/main/
+# maven.test.skip also skips compiling tests, so test-only dependencies are never downloaded
+RUN chmod +x mvnw && ./mvnw -B -q package -Dmaven.test.skip=true -Djacoco.skip=true \
  && java -Djarmode=tools -jar target/snappark-*.jar extract --layers --launcher --destination /layers
 
 # ---- runtime: JRE only, non-root, dependencies in their own cacheable layer ----
