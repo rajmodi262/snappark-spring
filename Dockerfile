@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-# ---- build: compile and package with the Maven wrapper (tests run in CI, not here) ----
+# ---- build: package with the Maven wrapper (tests run in the CI pipeline, not here) ----
 FROM eclipse-temurin:21-jdk-alpine AS build
 WORKDIR /src
 COPY .mvn/ .mvn/
