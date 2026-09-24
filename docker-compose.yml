@@ -1,0 +1,32 @@
+# Local stack: PostgreSQL 16 + the service. Admin API stays locked unless ADMIN_PASSWORD_HASH is set:
+#   ADMIN_PASSWORD_HASH='$2a$10$...' docker compose up --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: snappark
+      POSTGRES_USER: snappark
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-snappark}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U snappark -d snappark"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/snappark
+      DB_USER: snappark
+      DB_PASSWORD: ${DB_PASSWORD:-snappark}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <!-- Spring beans keep references to the collaborators they are constructed with, and JPA
+         entities hand out their fields; both are by design, not an encapsulation leak. -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+    <!-- Stateless JSON API: no session cookie is issued, so there is no CSRF surface.
+         See SecurityConfig. -->
+    <Match>
+        <Class name="com.rajmodi.snappark.config.SecurityConfig"/>
+        <Bug pattern="SPRING_CSRF_PROTECTION_DISABLED"/>
+    </Match>
+</FindBugsFilter>

@@ -1,0 +1,27 @@
+# Jenkins configuration as code: one admin user and a pipeline job that runs ../../Jenkinsfile.
+jenkins:
+  systemMessage: "SnapPark CI"
+  numExecutors: 2
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          password: ${JENKINS_ADMIN_PASSWORD}
+  authorizationStrategy: loggedInUsersCanDoAnything
+
+jobs:
+  - script: >
+      pipelineJob('snappark') {
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote { url('file:///repo') }
+                branch('*/main')
+              }
+            }
+            scriptPath('Jenkinsfile')
+          }
+        }
+      }
