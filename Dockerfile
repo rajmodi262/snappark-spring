@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # ---- build: package with the Maven wrapper (tests run in the CI pipeline, not here) ----
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM eclipse-temurin:25-jdk-alpine AS build
 WORKDIR /src
 COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
@@ -11,7 +11,7 @@ RUN chmod +x mvnw && ./mvnw -B -q package -Dmaven.test.skip=true -Djacoco.skip=t
  && java -Djarmode=tools -jar target/snappark-*.jar extract --layers --launcher --destination /layers
 
 # ---- runtime: JRE only, non-root, dependencies in their own cacheable layer ----
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 RUN addgroup -S snappark && adduser -S snappark -G snappark
 WORKDIR /app
 COPY --from=build /layers/dependencies/ ./
